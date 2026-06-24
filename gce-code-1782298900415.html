@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>Material Supply Request - GCENT.CO</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<style>
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+    direction: ltr; 
+    margin: 0; 
+    padding: 12px;
+    background: #fdfaf7;
+    -webkit-tap-highlight-color: transparent;
+}
+
+form {
+    max-width: 900px; 
+    margin: auto; 
+    background: white; 
+    padding: 16px; 
+    border-radius: 15px; 
+    box-shadow: 0px 4px 15px rgba(255, 102, 0, 0.08); 
+    border-top: 6px solid #ff6600; 
+    box-sizing: border-box;
+}
+
+.company-header {
+    text-align: center;
+    margin-top: 8px;
+    margin-bottom: 4px;
+    font-size: 30px;
+    font-weight: bold;
+    color: #ff6600;
+    letter-spacing: 1px;
+}
+
+h2 {
+    text-align: center; 
+    color: #333; 
+    margin-top: 4px; 
+    margin-bottom: 24px; 
+    font-weight: normal; 
+    font-size: 18px;
+}
+
+label {
+    font-weight: bold; 
+    display: block; 
+    margin-top: 16px; 
+    color: #444;
+    font-size: 15px;
+}
+
+input {
+    width: 100%; 
+    padding: 12px; 
+    margin: 6px 0; 
+    box-sizing: border-box; 
+    border: 1px solid #ddd; 
+    border-radius: 8px; 
+    font-size: 16px;
+    background-color: #fafafa;
+    transition: border-color 0.2s;
+}
+input:focus {
+    border-color: #ff6600; 
+    background-color: #fff;
+    outline: none;
+}
+
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: 18px;
+    border-radius: 8px;
+    border: 1px solid #eee;
+}
+
+table {
+    width: 100%; 
+    border-collapse: collapse; 
+    min-width: 550px;
+}
+
+th, td {
+    border: 1px solid #eee; 
+    padding: 12px; 
+    text-align: center; 
+    font-size: 14px;
+}
+
+th {
+    background-color: #fff0e6; 
+    color: #cc5200; 
+    font-weight: bold;
+}
+
+button {
+    padding: 14px 16px; 
+    border: none; 
+    border-radius: 8px; 
+    cursor: pointer; 
+    margin-top: 10px; 
+    font-weight: bold; 
+    font-size: 16px; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.add {
+    background: #ff6600; 
+    color: white; 
+    width: 100%;
+}
+
+.save {
+    background: #28a745; 
+    color: white; 
+    width: 100%; 
+    margin-top: 25px; 
+    padding: 15px;
+}
+
+.clear {
+    background: #dc3545; 
+    color: white; 
+    width: 100%;
+    margin-top: 12px;
+}
+
+.delete {
+    background: #dc3545; 
+    color: white; 
+    padding: 8px 14px; 
+    border-radius: 6px;
+    font-size: 14px;
+    display: inline-block;
+}
+
+.action-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+}
+.action-group button {
+    flex: 1;
+    margin-top: 0;
+}
+.print-btn {background: #ff9955; color: white;}
+.pdf-btn {background: #e02424; color: white;}
+
+/* تنسيق خاص يتم تطبيقه تلقائياً لإخفاء الأزرار وضبط الهوامش بـ 20mm عند حفظ الـ PDF */
+.hide-for-pdf button, 
+.hide-for-pdf .action-group, 
+.hide-for-pdf .clear, 
+.hide-for-pdf .save, 
+.hide-for-pdf .delete-cell {
+    display: none !important;
+}
+.hide-for-pdf input {
+    border: none !important;
+    border-bottom: 1px solid #333 !important;
+    background: transparent !important;
+    padding: 5px 0 !important;
+    border-radius: 0 !important;
+}
+</style>
+</head>
+
+<body>
+
+<div id="app-content">
+    <form id="form" onsubmit="event.preventDefault();">
+
+        <div class="company-header">GCENT.CO</div>
+        <h2>Material Supply Request</h2>
+
+        <label>Date:</label>
+        <input type="date" id="date">
+
+        <label>Employee Name:</label>
+        <input type="text" id="employee" placeholder="Enter employee name">
+
+        <label>Request Title:</label>
+        <input type="text" id="title" placeholder="e.g., New devices request">
+
+        <div class="table-container">
+            <table id="table">
+            <thead>
+            <tr>
+            <th>Supplier</th>
+            <th>Product</th>
+            <th>Available</th>
+            <th>Required</th>
+            <th class="delete-cell">Delete</th>
+            </tr>
+            </thead>
+            <tbody></tbody>
+            </table>
+        </div>
+
+        <button type="button" class="add" onclick="addRow()">Add New Product</button>
+
+        <div class="action-group">
+            <button type="button" class="print-btn" onclick="printForm()">Print Request</button>
+            <button type="button" class="pdf-btn" onclick="downloadPDF()">Download as PDF</button>
+        </div>
+
+        <button type="button" class="save" onclick="triggerSaveAlert()">Save and Confirm Data</button>
+        <button type="button" class="clear" onclick="clearForm()">Clear Form</button>
+
+    </form>
+</div>
+
+<script>
+window.onload = function() {
+        let data = JSON.parse(localStorage.getItem("data"));
+        if (data) {
+                document.getElementById("date").value = data.date || "";
+                document.getElementById("employee").value = data.employee || "";
+                document.getElementById("title").value = data.title || "";
+                if(data.items && data.items.length > 0) {
+                    data.items.forEach(x => addRow(x));
+                } else {
+                    addRow();
+                }
+        } else {
+                addRow();
+                setCurrentDate();
+        }
+};
+
+function setCurrentDate() {
+        let today = new Date().toISOString().split('T')[0];
+        document.getElementById("date").value = today;
+}
+
+function addRow(item = {}) {
+        let row = document.querySelector("#table tbody").insertRow();
+        row.innerHTML = `
+                <td><input value="${item.supplier || ''}" placeholder="Supplier" oninput="save()"></td>
+                <td><input value="${item.product || ''}" placeholder="Product" oninput="save()"></td>
+                <td><input type="number" value="${item.available || ''}" placeholder="0" oninput="save()"></td>
+                <td><input type="number" value="${item.required || ''}" placeholder="0" oninput="save()"></td>
+                <td class="delete-cell"><button type="button" class="delete" onclick="delRow(this)">Delete</button></td>
+        `;
+}
+
+function delRow(btn){
+        btn.closest("tr").remove();
+        save();
+}
+
+function save() {
+        let rows = document.querySelectorAll("#table tbody tr");
+        let items = [];
+        rows.forEach(r => {
+                let i = r.querySelectorAll("input");
+                if (i.length >= 4) {
+                    items.push({
+                            supplier: i[0].value,
+                            product: i[1].value,
+                            available: i[2].value,
+                            required: i[3].value
+                    });
+                }
+        });
+
+        let data = {
+                date: document.getElementById("date").value,
+                employee: document.getElementById("employee").value,
+                title: document.getElementById("title").value,
+                items: items
+        };
+
+        localStorage.setItem("data", JSON.stringify(data));
+}
+
+function printForm() {
+        window.print();
+}
+
+function downloadPDF() {
+        save(); 
+        
+        const element = document.getElementById('form');
+        element.classList.add('hide-for-pdf');
+
+        // إعداد الهوامش ومقاس A4 بدقة مليمترية داخل الجوال والكمبيوتر
+        const opt = {
+          margin:       20,
+          filename:     'Material_Supply_Request.pdf',
+          image:        { type: 'jpeg', quality: 0.98 },
+          html2canvas:  { scale: 2, useCORS: true },
+          jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        html2pdf().set(opt).from(element).save().then(() => {
+            element.classList.remove('hide-for-pdf');
+        });
+}
+
+function triggerSaveAlert() {
+        save();
+        alert("Material supply request data saved successfully!");
+}
+
+function clearForm(){
+        if(confirm("Are you sure you want to clear all data?")){
+                localStorage.clear();
+                location.reload();
+        }
+}
+
+document.getElementById("form").addEventListener("input", save);
+</script>
+
+</body>
+</html>
